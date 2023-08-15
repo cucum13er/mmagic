@@ -194,7 +194,7 @@ class BasicImageDataset(BaseDataset):
                                  f'{ext}'))
                 data[f'{key}_path'] = path
             data_list.append(data)
-
+            # breakpoint()
         return data_list
 
     def _get_path_list(self):

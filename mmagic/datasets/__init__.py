@@ -12,11 +12,12 @@ from .mscoco_dataset import MSCoCoDataset
 from .paired_image_dataset import PairedImageDataset
 from .singan_dataset import SinGANDataset
 from .unpaired_image_dataset import UnpairedImageDataset
-
+#############################################################
+from .ref_image_dataset import RefImageDataset
 __all__ = [
     'AdobeComp1kDataset', 'BasicImageDataset', 'BasicFramesDataset',
     'BasicConditionalDataset', 'UnpairedImageDataset', 'PairedImageDataset',
     'ImageNet', 'CIFAR10', 'GrowScaleImgDataset', 'SinGANDataset',
     'MSCoCoDataset', 'ControlNetDataset', 'DreamBoothDataset',
-    'ControlNetDataset', 'SDFinetuneDataset'
+    'ControlNetDataset', 'SDFinetuneDataset', 'RefImageDataset'
 ]

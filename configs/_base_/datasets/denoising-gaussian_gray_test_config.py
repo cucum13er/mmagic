@@ -14,6 +14,7 @@ test_pipeline = [
         channel_order='rgb',
         to_y_channel=True,
         imdecode_backend='cv2'),
+    # dict(type='PairedRandomCrop', gt_patch_size=128),    
     dict(
         type='RandomNoise',
         params=dict(
@@ -22,10 +23,14 @@ test_pipeline = [
             gaussian_sigma=[sigma, sigma],
             gaussian_gray_noise_prob=1),
         keys=['img']),
+
     dict(type='PackInputs')
 ]
 
-data_root = 'data/denoising_gaussian_test'
+#data_root = 'data/denoising_gaussian_test'
+data_root = 'data/Urban100/X4/gt'
+
+'''
 set12_dataloader = dict(
     num_workers=4,
     persistent_workers=False,
@@ -57,7 +62,7 @@ bsd68_evaluator = [
     dict(type='PSNR', prefix='BSD68'),
     dict(type='SSIM', prefix='BSD68'),
 ]
-
+'''
 urban100_dataloader = dict(
     num_workers=4,
     persistent_workers=False,
@@ -67,22 +72,22 @@ urban100_dataloader = dict(
         type='BasicImageDataset',
         metainfo=dict(dataset_type='Urban100', task_name='denoising'),
         data_root=data_root,
-        data_prefix=dict(img='Urban100', gt='Urban100'),
+        data_prefix=dict(img='', gt=''),
         pipeline=test_pipeline))
 urban100_evaluator = [
-    dict(type='PSNR', prefix='Urban100'),
-    dict(type='SSIM', prefix='Urban100'),
+    dict(type='PSNR', prefix=''),
+    dict(type='SSIM', prefix=''),
 ]
 
 # test config
 test_cfg = dict(type='MultiTestLoop')
 test_dataloader = [
-    set12_dataloader,
-    bsd68_dataloader,
+    #set12_dataloader,
+    #bsd68_dataloader,
     urban100_dataloader,
 ]
 test_evaluator = [
-    set12_evaluator,
-    bsd68_evaluator,
+    #set12_evaluator,
+    #bsd68_evaluator,
     urban100_evaluator,
 ]

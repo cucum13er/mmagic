@@ -354,11 +354,12 @@ class PairedRandomCrop(BaseTransform):
         gt_key (str): Key of GT img. Default: 'gt'.
     """
 
-    def __init__(self, gt_patch_size, lq_key='img', gt_key='gt'):
+    def __init__(self, gt_patch_size, lq_key='img', gt_key='gt', scale=None):
 
         self.gt_patch_size = gt_patch_size
         self.lq_key = lq_key
         self.gt_key = gt_key
+        self.scale = scale
 
     def transform(self, results):
         """Transform function.
@@ -371,7 +372,15 @@ class PairedRandomCrop(BaseTransform):
             dict: A dict containing the processed data and information.
         """
 
-        scale = results['scale']
+    	# modified by Rui        
+        if self.scale == None:
+            if 'scale' in results.keys():
+        	    scale = results['scale']	    
+            else:
+        	    scale = 1
+        else:
+            scale = self.scale
+        
         lq_patch_size = self.gt_patch_size // scale
 
         lq_is_list = isinstance(results[self.lq_key], list)

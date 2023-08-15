@@ -201,7 +201,7 @@ class Attention(BaseModule):
             Tensor: Forward results.
         """
         b, c, h, w = x.shape
-
+        # breakpoint()
         qkv = self.qkv_dwconv(self.qkv(x))
         q, k, v = qkv.chunk(3, dim=1)
 
@@ -228,6 +228,7 @@ class Attention(BaseModule):
             w=w)
 
         out = self.project_out(out)
+        # breakpoint()
         return out
 
 
@@ -528,8 +529,9 @@ class Restormer(BaseModule):
 
         inp_img = F.pad(inp_img, (0, padding_w, 0, padding_h), 'reflect')
         inp_enc_level1 = self.patch_embed(inp_img)
+        # breakpoint()
         out_enc_level1 = self.encoder_level1(inp_enc_level1)
-
+        # breakpoint()
         inp_enc_level2 = self.down1_2(out_enc_level1)
         out_enc_level2 = self.encoder_level2(inp_enc_level2)
 

@@ -35,6 +35,7 @@ class BaseEditModel(BaseModel):
     def __init__(self,
                  generator: dict,
                  pixel_loss: dict,
+                 regis_loss: dict, # Added by Rui
                  train_cfg: Optional[dict] = None,
                  test_cfg: Optional[dict] = None,
                  init_cfg: Optional[dict] = None,
@@ -50,6 +51,8 @@ class BaseEditModel(BaseModel):
 
         # loss
         self.pixel_loss = MODELS.build(pixel_loss)
+        # add registration loss by Rui
+        self.regis_loss = MODELS.build(regis_loss)
 
     def forward(self,
                 inputs: torch.Tensor,
@@ -103,7 +106,10 @@ class BaseEditModel(BaseModel):
                 - If ``mode == tensor``, return a tensor or ``tuple`` of tensor
                   or ``dict`` or tensor for custom use.
         """
-        if isinstance(inputs, dict):
+        # breakpoint()
+        if self.generator.__class__.__name__ == 'Reformer':
+            inputs = inputs
+        elif isinstance(inputs, dict):
             inputs = inputs['img']
         if mode == 'tensor':
             return self.forward_tensor(inputs, data_samples, **kwargs)
@@ -111,8 +117,12 @@ class BaseEditModel(BaseModel):
         elif mode == 'predict':
             predictions = self.forward_inference(inputs, data_samples,
                                                  **kwargs)
-            predictions = self.convert_to_datasample(predictions, data_samples,
+            if self.generator.__class__.__name__ == 'Reformer':
+                predictions = self.convert_to_datasample(predictions, data_samples, None)
+            else:
+                predictions = self.convert_to_datasample(predictions, data_samples,
                                                      inputs)
+            # breakpoint()
             return predictions
 
         elif mode == 'loss':
@@ -163,10 +173,10 @@ class BaseEditModel(BaseModel):
         Returns:
             Tensor: result of simple forward.
         """
+        # breakpoint()
+        feats, LRfeats, Reffeats = self.generator(inputs, **kwargs)
 
-        feats = self.generator(inputs, **kwargs)
-
-        return feats
+        return feats, LRfeats, Reffeats
 
     def forward_inference(self,
                           inputs: torch.Tensor,
@@ -185,12 +195,14 @@ class BaseEditModel(BaseModel):
             DataSample: predictions.
         """
 
-        feats = self.forward_tensor(inputs, data_samples, **kwargs)
+        feats, _, _ = self.forward_tensor(inputs, data_samples, **kwargs)
+        
+        # breakpoint()
         feats = self.data_preprocessor.destruct(feats, data_samples)
-
+        # breakpoint()
         # create a stacked data sample here
         predictions = DataSample(pred_img=feats.cpu())
-
+        # breakpoint()
         return predictions
 
     def forward_train(self,
@@ -209,9 +221,13 @@ class BaseEditModel(BaseModel):
             dict: Dict of losses.
         """
 
-        feats = self.forward_tensor(inputs, data_samples, **kwargs)
-        batch_gt_data = data_samples.gt_img
-
-        loss = self.pixel_loss(feats, batch_gt_data)
+        feats, LRfeats, Reffeats = self.forward_tensor(inputs, data_samples, **kwargs) # revised by Rui
+        # breakpoint()
+        #################### revised by Rui ##################################
+        batch_gt_data = inputs['gt_img']
+        # batch_gt_data = data_samples.gt_img
+        ######################################################################
+        loss = self.pixel_loss(feats, batch_gt_data) + self.regis_loss(LRfeats, Reffeats)
+        # loss = self.pixel_loss(feats, batch_gt_data) + self.
 
         return dict(loss=loss)

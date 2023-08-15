@@ -5,9 +5,10 @@ from .pggan_fetch_data_hook import PGGANFetchDataHook
 from .pickle_data_hook import PickleDataHook
 from .reduce_lr_scheduler_hook import ReduceLRSchedulerHook
 from .visualization_hook import BasicVisualizationHook, VisualizationHook
-
+##########################################################################
+from .data_preregis_hook import Reformer_PreRegis
 __all__ = [
     'ReduceLRSchedulerHook', 'BasicVisualizationHook', 'VisualizationHook',
     'ExponentialMovingAverageHook', 'IterTimerHook', 'PGGANFetchDataHook',
-    'PickleDataHook'
+    'PickleDataHook', 'Reformer_PreRegis'
 ]

@@ -44,9 +44,9 @@ def parse_args():
 
 def main():
     args = parse_args()
-
     # load config
     cfg = Config.fromfile(args.config)
+
     cfg.launcher = args.launcher
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)

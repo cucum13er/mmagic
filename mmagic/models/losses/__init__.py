@@ -17,7 +17,8 @@ from .perceptual_loss import (PerceptualLoss, PerceptualVGG,
                               TransferalPerceptualLoss)
 from .pixelwise_loss import (CharbonnierLoss, L1Loss, MaskedTVLoss, MSELoss,
                              PSNRLoss, tv_loss)
-
+############################################################################
+from .regis_loss import Registration_loss
 __all__ = [
     'L1Loss', 'MSELoss', 'CharbonnierLoss', 'L1CompositionLoss',
     'MSECompositionLoss', 'CharbonnierCompLoss', 'GANLoss', 'GaussianBlur',
@@ -28,5 +29,5 @@ __all__ = [
     'CLIPLoss', 'CLIPLossComps', 'DiscShiftLossComps', 'FaceIdLossComps',
     'GANLossComps', 'GeneratorPathRegularizerComps',
     'GradientPenaltyLossComps', 'R1GradientPenaltyComps', 'disc_shift_loss',
-    'tv_loss', 'PSNRLoss'
+    'tv_loss', 'PSNRLoss', 'Registration_loss'
 ]

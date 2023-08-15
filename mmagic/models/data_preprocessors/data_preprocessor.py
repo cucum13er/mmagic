@@ -68,7 +68,7 @@ class DataPreprocessor(ImgDataPreprocessor):
             data sample. Only support with input data samples are
             `DataSamples`. Defaults to True.
     """
-    _NON_IMAGE_KEYS = ['noise']
+    _NON_IMAGE_KEYS = ['noise', 'prior_regis', 'regis']
     _NON_CONCATENATE_KEYS = ['num_batches', 'mode', 'sample_kwargs', 'eq_cfg']
 
     def __init__(self,
@@ -91,6 +91,7 @@ class DataPreprocessor(ImgDataPreprocessor):
             std = [std]
 
         super().__init__(mean, std, pad_size_divisor, pad_value)
+        # breakpoint()
         # get channel order
         assert (output_channel_order is None
                 or output_channel_order in ['RGB', 'BGR']), (
@@ -292,15 +293,15 @@ class DataPreprocessor(ImgDataPreprocessor):
                 new_index = [2, 1, 0, 3]
             else:
                 new_index = [2, 1, 0]
-
+            
             # do conversion
             inputs = torch.index_select(
                 inputs, channel_index,
                 torch.LongTensor(new_index).to(inputs.device))
             return inputs
-
+        #breakpoint()
         channel_index = self._parse_channel_index(inputs)
-
+        
         if inputs_order.upper() in ['RGB', 'BGR']:
             inputs = conversion(inputs, channel_index)
             return inputs, target_order
@@ -426,6 +427,8 @@ class DataPreprocessor(ImgDataPreprocessor):
         num_img = len(tensor_list)
         all_sizes: torch.Tensor = torch.Tensor(
             [tensor.shape for tensor in tensor_list])
+        # print(all_sizes,'/n above is all sizes!')
+        # breakpoint()
         max_sizes = torch.ceil(
             torch.max(all_sizes, dim=0)[0] /
             self.pad_size_divisor) * self.pad_size_divisor
@@ -523,6 +526,7 @@ class DataPreprocessor(ImgDataPreprocessor):
         if pad_size_dict:
             padding_sizes = list(pad_size_dict.values())[0]
             padding_key = list(pad_size_dict.keys())[0]
+            # breakpoint()
             for idx, tar_size in enumerate(padding_sizes):
                 for k, sizes in pad_size_dict.items():
                     if (tar_size != sizes[idx]).any():
@@ -602,10 +606,14 @@ class DataPreprocessor(ImgDataPreprocessor):
         Returns:
             dict: Data in the same format as the model input.
         """
+        # breakpoint()
         data = self.cast_data(data)
+        # breakpoint()
         _batch_inputs = data['inputs']
         _batch_data_samples = data.get('data_samples', None)
-
+        # for i in _batch_inputs['ref']:
+        #     print(i.shape)
+        # breakpoint()
         # process input
         if isinstance(_batch_inputs, torch.Tensor):
             _batch_inputs, _batch_data_samples = \
@@ -681,6 +689,7 @@ class DataPreprocessor(ImgDataPreprocessor):
         # NOTE: only support passing tensor sample, if the output of model is
         # a dict, users should call this manually.
         # Since we do not know whether the outputs is image tensor.
+        # breakpoint()
         _batch_outputs = self._destruct_norm_and_conversion(
             outputs, data_samples, key)
         _batch_outputs = self._destruct_padding(_batch_outputs, data_samples)

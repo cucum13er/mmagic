@@ -61,7 +61,9 @@ from .tdan import TDAN, TDANNet
 from .tof import TOFlowVFINet, TOFlowVSRNet, ToFResBlock
 from .ttsr import LTE, TTSR, SearchTransformer, TTSRDiscriminator, TTSRNet
 from .wgan_gp import WGANGP
-
+##################################################################################
+### added by Rui ##############
+from .reformer import Reformer
 __all__ = [
     'AOTEncoderDecoder', 'AOTBlockNeck', 'AOTInpaintor',
     'ContextualAttentionNeck', 'ContextualAttentionModule', 'CAIN', 'CAINNet',
@@ -88,5 +90,5 @@ __all__ = [
     'StyleGAN3Generator', 'InstColorization', 'NAFBaseline',
     'NAFBaselineLocal', 'NAFNet', 'NAFNetLocal', 'DenoisingUnet',
     'ClipWrapper', 'EG3D', 'Restormer', 'SwinIRNet', 'StableDiffusion',
-    'ControlStableDiffusion', 'DreamBooth'
+    'ControlStableDiffusion', 'DreamBooth', 'Reformer'
 ]

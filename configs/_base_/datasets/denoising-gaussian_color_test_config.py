@@ -23,7 +23,9 @@ test_pipeline = [
     dict(type='PackInputs')
 ]
 
-data_root = 'data/denoising_gaussian_test'
+#data_root = 'data/denoising_gaussian_test'
+data_root = 'data/Urban100/X4/gt'
+'''
 cbsd68_dataloader = dict(
     num_workers=4,
     persistent_workers=False,
@@ -71,7 +73,7 @@ mcmaster_evaluator = [
     dict(type='PSNR', prefix='McMaster'),
     dict(type='SSIM', prefix='McMaster'),
 ]
-
+'''
 urban100_dataloader = dict(
     num_workers=4,
     persistent_workers=False,
@@ -81,24 +83,24 @@ urban100_dataloader = dict(
         type='BasicImageDataset',
         metainfo=dict(dataset_type='Urban100', task_name='denoising'),
         data_root=data_root,
-        data_prefix=dict(img='Urban100', gt='Urban100'),
+        data_prefix=dict(img='', gt=''),
         pipeline=test_pipeline))
 urban100_evaluator = [
-    dict(type='PSNR', prefix='Urban100'),
-    dict(type='SSIM', prefix='Urban100'),
+    dict(type='PSNR', prefix=''),
+    dict(type='SSIM', prefix=''),
 ]
 
 # test config
 test_cfg = dict(type='MultiTestLoop')
 test_dataloader = [
-    cbsd68_dataloader,
-    kodak24_dataloader,
-    mcmaster_dataloader,
+    #cbsd68_dataloader,
+    #kodak24_dataloader,
+    #mcmaster_dataloader,
     urban100_dataloader,
 ]
 test_evaluator = [
-    cbsd68_evaluator,
-    kodak24_evaluator,
-    mcmaster_evaluator,
+    #cbsd68_evaluator,
+    #kodak24_evaluator,
+    #mcmaster_evaluator,
     urban100_evaluator,
 ]

@@ -276,7 +276,7 @@ python tools/test.py configs/restormer/restormer_official_dfwb-color-sigma50.py 
 
 # Test Color Gaussian Noise
 # sigma15
-./tools/dist_test.sh configs/restormer/restormer_official_dfwb-color-sigma15.py https://download.openmmlab.com/mmediting/restormer/restormer_official_dfwb-color-sigma15-012ceb71.pth
+	./tools/dist_test.sh configs/restormer/restormer_official_dfwb-color-sigma15.py https://download.openmmlab.com/mmediting/restormer/restormer_official_dfwb-color-sigma15-012ceb71.pth
 
 ./tools/dist_test.sh configs/restormer/restormer_official_dfwb-color-sigma15.py https://download.openmmlab.com/mmediting/restormer/restormer_official_dfwb-color-blind-dfd03c9f.pth
 

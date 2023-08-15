@@ -12,8 +12,8 @@ from .crop import (CenterCropLongEdge, Crop, CropAroundCenter, CropAroundFg,
 from .fgbg import (CompositeFg, MergeFgAndBg, PerturbBg, RandomJitter,
                    RandomLoadResizeBg)
 from .formatting import PackInputs
-from .generate_assistant import (GenerateCoordinateAndCell,
-                                 GenerateFacialHeatmap)
+#from .generate_assistant import (GenerateCoordinateAndCell,
+#                                GenerateFacialHeatmap)
 from .generate_frame_indices import (GenerateFrameIndices,
                                      GenerateFrameIndiceswithPadding,
                                      GenerateSegmentIndices)
@@ -32,8 +32,8 @@ from .values import CopyValues, SetValues
 
 __all__ = [
     'BinarizeImage', 'Clip', 'ColorJitter', 'CopyValues', 'Crop', 'CropLike',
-    'DegradationsWithShuffle', 'LoadImageFromFile', 'LoadMask', 'Flip',
-    'FixedCrop', 'GenerateCoordinateAndCell', 'GenerateFacialHeatmap',
+    'DegradationsWithShuffle', 'LoadImageFromFile', 'LoadMask', 'Flip', 'FixedCrop',
+#    'FixedCrop', 'GenerateCoordinateAndCell', 'GenerateFacialHeatmap',
     'GenerateFrameIndices', 'GenerateFrameIndiceswithPadding',
     'GenerateSegmentIndices', 'GetMaskedImage', 'GetSpatialDiscountMask',
     'MATLABLikeResize', 'MirrorSequence', 'ModCrop', 'Normalize', 'PackInputs',
