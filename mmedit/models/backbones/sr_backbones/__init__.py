@@ -15,9 +15,24 @@ from .srcnn import SRCNN
 from .tdan_net import TDANNet
 from .tof import TOFlow
 from .ttsr_net import TTSRNet
-
+#####################################################
+from .resnet_frozen import ResNet
+from .rdn_rui import RDN_Rui
+from .dasr import DASR
+from .ha_edsr import HAEDSR
+from .ha_edsr_cont import HAEDSR_Cont
+from .nonlinear_neck import NonLinearNeck
+from .easyres import EasyRes
+from .moco import MoCo
+from .mocov2_neck import MoCoV2Neck
+from .contrastive_head import ContrastiveHead
+from .snn_head import SNNLossHead
+from .moco_label import MoCo_label
+from .hasr import HASR
 __all__ = [
     'MSRResNet', 'RRDBNet', 'EDSR', 'EDVRNet', 'TOFlow', 'SRCNN', 'DICNet',
     'BasicVSRNet', 'IconVSR', 'RDN', 'TTSRNet', 'GLEANStyleGANv2', 'TDANNet',
-    'LIIFEDSR', 'LIIFRDN', 'BasicVSRPlusPlus', 'RealBasicVSRNet'
+    'LIIFEDSR', 'LIIFRDN', 'BasicVSRPlusPlus', 'RealBasicVSRNet', 'ResNet', 
+    'RDN_Rui', 'DASR', 'HAEDSR', 'HAEDSR_Cont', 'NonLinearNeck', 'EasyRes', 'MoCo',
+    'MoCoV2Neck', 'ContrastiveHead', 'SNNLossHead', 'MoCo_label', 'HASR',
 ]

@@ -11,9 +11,7 @@ model = dict(
         spynet_pretrained='https://download.openmmlab.com/mmediting/restorers/'
         'basicvsr/spynet_20210409-c6c1bd09.pth',
         cpu_cache_length=100),
-    pixel_loss=dict(type='CharbonnierLoss', loss_weight=1.0, reduction='mean'),
-    ensemble=dict(type='SpatialTemporalEnsemble', is_temporal_ensemble=False),
-)
+    pixel_loss=dict(type='CharbonnierLoss', loss_weight=1.0, reduction='mean'))
 # model training and testing settings
 train_cfg = dict(fix_iter=5000)
 test_cfg = dict(metrics=['PSNR', 'SSIM'], crop_border=0)

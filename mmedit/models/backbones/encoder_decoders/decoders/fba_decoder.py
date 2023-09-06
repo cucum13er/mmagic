@@ -13,7 +13,6 @@ from mmedit.utils import get_root_logger
 class FBADecoder(nn.Module):
     """Decoder for FBA matting.
 
-    Args:
         pool_scales (tuple[int]): Pooling scales used in Pooling Pyramid
             Module.
         in_channels (int): Input channels.
@@ -112,27 +111,26 @@ class FBADecoder(nn.Module):
 
         self.unpool = nn.MaxUnpool2d(2, stride=2)
 
-        conv_up4_list = list(
-            ConvModule(
-                64 + 3 + 3 + 2,
-                32,
-                padding=1,
-                kernel_size=3,
-                bias=True,
-                act_cfg=self.act_cfg).children())
-        conv_up4_list += list(
-            ConvModule(
-                32,
-                16,
-                padding=1,
-                kernel_size=3,
-                bias=True,
-                act_cfg=self.act_cfg).children())
-        conv_up4_list += list(
-            ConvModule(
-                16, 7, padding=0, kernel_size=1, bias=True,
-                act_cfg=None).children())
-        self.conv_up4 = nn.Sequential(*conv_up4_list)
+        self.conv_up4 = nn.Sequential(
+            *(list(
+                ConvModule(
+                    64 + 3 + 3 + 2,
+                    32,
+                    padding=1,
+                    kernel_size=3,
+                    bias=True,
+                    act_cfg=self.act_cfg).children()) + list(
+                        ConvModule(
+                            32,
+                            16,
+                            padding=1,
+                            kernel_size=3,
+                            bias=True,
+                            act_cfg=self.act_cfg).children()) +
+              list(
+                  ConvModule(
+                      16, 7, padding=0, kernel_size=1, bias=True,
+                      act_cfg=None).children())))
 
     def init_weights(self, pretrained=None):
         """Init weights for the model.
@@ -156,7 +154,6 @@ class FBADecoder(nn.Module):
 
     def forward(self, inputs):
         """Forward function.
-
         Args:
             inputs (dict): Output dict of FbaEncoder.
         Returns:

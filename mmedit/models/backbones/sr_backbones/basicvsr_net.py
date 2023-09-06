@@ -125,7 +125,7 @@ class BasicVSRNet(nn.Module):
         # compute optical flow
         flows_forward, flows_backward = self.compute_flow(lrs)
 
-        # backward-time propagation
+        # backward-time propgation
         outputs = []
         feat_prop = lrs.new_zeros(n, self.mid_channels, h, w)
         for i in range(t - 1, -1, -1):
@@ -210,7 +210,8 @@ class ResidualBlocksWithInputConv(nn.Module):
         self.main = nn.Sequential(*main)
 
     def forward(self, feat):
-        """Forward function for ResidualBlocksWithInputConv.
+        """
+        Forward function for ResidualBlocksWithInputConv.
 
         Args:
             feat (Tensor): Input feature with shape (n, in_channels, h, w)

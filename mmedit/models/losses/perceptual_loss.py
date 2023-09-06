@@ -98,13 +98,10 @@ class PerceptualLoss(nn.Module):
     """Perceptual loss with commonly used style loss.
 
     Args:
-        layers_weights (dict): The weight for each layer of vgg feature for
-            perceptual loss. Here is an example: {'4': 1., '9': 1., '18': 1.},
-            which means the 5th, 10th and 18th feature layer will be
-            extracted with weight 1.0 in calculating losses.
-        layers_weights_style (dict): The weight for each layer of vgg feature
-            for style loss. If set to 'None', the weights are set equal to
-            the weights for perceptual loss. Default: None.
+        layers_weights (dict): The weight for each layer of vgg feature.
+            Here is an example: {'4': 1., '9': 1., '18': 1.}, which means the
+            5th, 10th and 18th feature layer will be extracted with weight 1.0
+            in calculating losses.
         vgg_type (str): The type of vgg network used as feature extractor.
             Default: 'vgg19'.
         use_input_norm (bool):  If True, normalize the input image in vgg.
@@ -127,7 +124,6 @@ class PerceptualLoss(nn.Module):
 
     def __init__(self,
                  layer_weights,
-                 layer_weights_style=None,
                  vgg_type='vgg19',
                  use_input_norm=True,
                  perceptual_weight=1.0,
@@ -140,24 +136,11 @@ class PerceptualLoss(nn.Module):
         self.perceptual_weight = perceptual_weight
         self.style_weight = style_weight
         self.layer_weights = layer_weights
-        self.layer_weights_style = layer_weights_style
-
         self.vgg = PerceptualVGG(
-            layer_name_list=list(self.layer_weights.keys()),
+            layer_name_list=list(layer_weights.keys()),
             vgg_type=vgg_type,
             use_input_norm=use_input_norm,
             pretrained=pretrained)
-
-        if self.layer_weights_style is not None and \
-                self.layer_weights_style != self.layer_weights:
-            self.vgg_style = PerceptualVGG(
-                layer_name_list=list(self.layer_weights_style.keys()),
-                vgg_type=vgg_type,
-                use_input_norm=use_input_norm,
-                pretrained=pretrained)
-        else:
-            self.layer_weights_style = self.layer_weights
-            self.vgg_style = None
 
         criterion = criterion.lower()
         if criterion == 'l1':
@@ -199,16 +182,11 @@ class PerceptualLoss(nn.Module):
 
         # calculate style loss
         if self.style_weight > 0:
-            if self.vgg_style is not None:
-                x_features = self.vgg_style(x)
-                gt_features = self.vgg_style(gt.detach())
-
             style_loss = 0
             for k in x_features.keys():
                 style_loss += self.criterion(
                     self._gram_mat(x_features[k]),
-                    self._gram_mat(
-                        gt_features[k])) * self.layer_weights_style[k]
+                    self._gram_mat(gt_features[k])) * self.layer_weights[k]
             style_loss *= self.style_weight
         else:
             style_loss = None

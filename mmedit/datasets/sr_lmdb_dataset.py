@@ -75,13 +75,13 @@ class SRLmdbDataset(BaseSRDataset):
         self.data_infos = self.load_annotations()
 
     def load_annotations(self):
-        """Load annotations for SR dataset.
+        """Load annoations for SR dataset.
 
         It loads the LQ and GT image path from the ``meta_info.txt`` in the
         LMDB files.
 
         Returns:
-            list[dict]: A list of dicts for paired paths of LQ and GT.
+            dict: Returned dict for LQ and GT pairs.
         """
         data_infos = []
         # read keys from meta_info.txt in the gt folder

@@ -7,11 +7,12 @@ from mmedit.utils import get_root_logger
 
 
 class DenseLayer(nn.Module):
-    """Dense layer.
+    """Dense layer
 
     Args:
         in_channels (int): Channel number of inputs.
         out_channels (int): Channel number of outputs.
+
     """
 
     def __init__(self, in_channels, out_channels):
@@ -33,7 +34,7 @@ class DenseLayer(nn.Module):
 
 
 class RDB(nn.Module):
-    """Residual Dense Block of Residual Dense Network.
+    """Residual Dense Block of Residual Dense Network
 
     Args:
         in_channels (int): Channel number of inputs.
@@ -51,7 +52,7 @@ class RDB(nn.Module):
         # local feature fusion
         self.lff = nn.Conv2d(
             in_channels + channel_growth * num_layers,
-            in_channels,
+            channel_growth,
             kernel_size=1)
 
     def forward(self, x):
@@ -75,12 +76,6 @@ class RDN(nn.Module):
     Adapted from 'https://github.com/yjn870/RDN-pytorch.git'
     'RDN-pytorch/blob/master/models.py'
     Copyright (c) 2021, JaeYun Yeo, under MIT License.
-
-    Most of the implementation follows the implementation in:
-    'https://github.com/sanghyun-son/EDSR-PyTorch.git'
-    'EDSR-PyTorch/blob/master/src/model/rdn.py'
-    Copyright (c) 2017, sanghyun-son, under MIT license.
-
 
     Args:
         in_channels (int): Channel number of inputs.
@@ -118,15 +113,16 @@ class RDN(nn.Module):
             mid_channels, mid_channels, kernel_size=3, padding=3 // 2)
 
         # residual dense blocks
-        self.rdbs = nn.ModuleList()
-        for _ in range(self.num_blocks):
+        self.rdbs = nn.ModuleList(
+            [RDB(self.mid_channels, self.channel_growth, self.num_layers)])
+        for _ in range(self.num_blocks - 1):
             self.rdbs.append(
-                RDB(self.mid_channels, self.channel_growth, self.num_layers))
+                RDB(self.channel_growth, self.channel_growth, self.num_layers))
 
         # global feature fusion
         self.gff = nn.Sequential(
             nn.Conv2d(
-                self.mid_channels * self.num_blocks,
+                self.channel_growth * self.num_blocks,
                 self.mid_channels,
                 kernel_size=1),
             nn.Conv2d(

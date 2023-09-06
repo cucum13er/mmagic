@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
 from collections import defaultdict
 
 import numpy as np
@@ -74,10 +73,9 @@ class SRVid4Dataset(BaseSRDataset):
         self.data_infos = self.load_annotations()
 
     def load_annotations(self):
-        """Load annotations for Vid4 dataset.
-
+        """Load annoations for Vid4 dataset.
         Returns:
-            list[dict]: A list of dicts for paired paths and other information.
+            dict: Returned dict for LQ and GT pairs.
         """
         self.folders = {}
         data_infos = []
@@ -91,15 +89,13 @@ class SRVid4Dataset(BaseSRDataset):
                         dict(
                             lq_path=self.lq_folder,
                             gt_path=self.gt_folder,
-                            key=os.path.join(folder,
-                                             self.filename_tmpl.format(i)),
+                            key=f'{folder}/{self.filename_tmpl.format(i)}',
                             num_input_frames=self.num_input_frames,
                             max_frame_num=int(frame_num)))
         return data_infos
 
     def evaluate(self, results, logger=None):
         """Evaluate with different metrics.
-
         Args:
             results (list[tuple]): The output of forward_test() of the model.
         Return:

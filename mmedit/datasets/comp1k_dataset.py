@@ -50,10 +50,11 @@ class AdobeComp1kDataset(BaseMattingDataset):
                 "bg": 'bg/001.png'
             },
         ]
+
     """
 
     def load_annotations(self):
-        """Load annotations for Adobe Composition-1k dataset.
+        """Load annoations for Adobe Composition-1k dataset.
 
         It loads image paths from json file.
 

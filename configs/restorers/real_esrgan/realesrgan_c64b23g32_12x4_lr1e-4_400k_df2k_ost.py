@@ -1,8 +1,5 @@
 exp_name = 'realesrgan_c64b23g32_12x4_lr1e-4_400k_df2k_ost'
-
 scale = 4
-gt_crop_size = 400
-
 # model settings
 model = dict(
     type='RealESRGAN',
@@ -12,8 +9,7 @@ model = dict(
         out_channels=3,
         mid_channels=64,
         num_blocks=23,
-        growth_channels=32,
-        upscale_factor=scale),
+        growth_channels=32),
     discriminator=dict(
         type='UNetDiscriminatorWithSpectralNorm',
         in_channels=3,
@@ -57,16 +53,12 @@ train_pipeline = [
         io_backend='disk',
         key='gt',
         channel_order='rgb'),
-    dict(
-        type='Crop',
-        keys=['gt'],
-        crop_size=(gt_crop_size, gt_crop_size),
-        random_crop=True),
+    dict(type='Crop', keys=['gt'], crop_size=(400, 400), random_crop=True),
     dict(type='RescaleToZeroOne', keys=['gt']),
     dict(
         type='UnsharpMasking',
         keys=['gt'],
-        kernel_size=51,
+        radius=50,
         sigma=0,
         weight=0.5,
         threshold=10),
@@ -159,8 +151,7 @@ train_pipeline = [
                 dict(
                     type='RandomResize',
                     params=dict(
-                        target_size=(gt_crop_size // scale,
-                                     gt_crop_size // scale),
+                        target_size=(100, 100),
                         resize_opt=['bilinear', 'area', 'bicubic'],
                         resize_prob=[1 / 3., 1 / 3., 1 / 3.]),
                 ),
@@ -187,7 +178,7 @@ train_pipeline = [
     dict(
         type='UnsharpMasking',
         keys=['gt'],
-        kernel_size=51,
+        radius=50,
         sigma=0,
         weight=0.5,
         threshold=10),
@@ -243,15 +234,15 @@ data = dict(
             scale=scale)),
     val=dict(
         type=val_dataset_type,
-        lq_folder='data/Set5/LRbicx4',
-        gt_folder='data/Set5/GTmod12',
+        lq_folder='data/set5/bicLRx4',
+        gt_folder='data/set5/HR',
         pipeline=val_pipeline,
         scale=scale,
         filename_tmpl='{}'),
     test=dict(
         type=val_dataset_type,
-        lq_folder='data/Set5/LRbicx4',
-        gt_folder='data/Set5/GTmod12',
+        lq_folder='data/set5/bicLRx4',
+        gt_folder='data/set5/HR',
         pipeline=val_pipeline,
         scale=scale,
         filename_tmpl='{}'))

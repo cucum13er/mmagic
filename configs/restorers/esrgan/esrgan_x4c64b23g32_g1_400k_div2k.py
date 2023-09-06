@@ -10,8 +10,7 @@ model = dict(
         out_channels=3,
         mid_channels=64,
         num_blocks=23,
-        growth_channels=32,
-        upscale_factor=scale),
+        growth_channels=32),
     discriminator=dict(type='ModifiedVGG', in_channels=3, mid_channels=64),
     pixel_loss=dict(type='L1Loss', loss_weight=1e-2, reduction='mean'),
     perceptual_loss=dict(
@@ -82,7 +81,7 @@ test_pipeline = [
         mean=[0, 0, 0],
         std=[1, 1, 1],
         to_rgb=True),
-    dict(type='Collect', keys=['lq', 'gt'], meta_keys=['lq_path', 'gt_path']),
+    dict(type='Collect', keys=['lq', 'gt'], meta_keys=['lq_path', 'lq_path']),
     dict(type='ImageToTensor', keys=['lq', 'gt'])
 ]
 
@@ -103,15 +102,15 @@ data = dict(
             scale=scale)),
     val=dict(
         type=val_dataset_type,
-        lq_folder='data/Set14/LRbicx4',
-        gt_folder='data/Set14/GTmod12',
+        lq_folder='data/val_set14/Set14_bicLRx4',
+        gt_folder='data/val_set14/Set14',
         pipeline=test_pipeline,
         scale=scale,
         filename_tmpl='{}'),
     test=dict(
         type=val_dataset_type,
-        lq_folder='data/Set5/LRbicx4',
-        gt_folder='data/Set5/GTmod12',
+        lq_folder='data/val_set5/Set5_bicLRx4',
+        gt_folder='data/val_set5/Set5',
         pipeline=test_pipeline,
         scale=scale,
         filename_tmpl='{}'))

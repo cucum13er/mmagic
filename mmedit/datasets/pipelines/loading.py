@@ -8,8 +8,10 @@ from mmcv.fileio import FileClient
 from mmedit.core.mask import (bbox2mask, brush_stroke_mask, get_irregular_mask,
                               random_bbox)
 from ..registry import PIPELINES
-
-
+###############################################################################
+import scipy.io as sio
+import cv2
+from cv2 import IMREAD_COLOR
 @PIPELINES.register_module()
 class LoadImageFromFile:
     """Load image from file.
@@ -50,7 +52,7 @@ class LoadImageFromFile:
         self.kwargs = kwargs
         self.file_client = None
         self.use_cache = use_cache
-        self.cache = dict() if use_cache else None
+        self.cache = None
         self.backend = backend
 
     def __call__(self, results):
@@ -64,9 +66,12 @@ class LoadImageFromFile:
             dict: A dict containing the processed data and information.
         """
         filepath = str(results[f'{self.key}_path'])
+        # print(filepath,'111111111111111')
         if self.file_client is None:
             self.file_client = FileClient(self.io_backend, **self.kwargs)
         if self.use_cache:
+            if self.cache is None:
+                self.cache = dict()
             if filepath in self.cache:
                 img = self.cache[filepath]
             else:
@@ -78,12 +83,22 @@ class LoadImageFromFile:
                     backend=self.backend)  # HWC
                 self.cache[filepath] = img
         else:
-            img_bytes = self.file_client.get(filepath)
-            img = mmcv.imfrombytes(
-                img_bytes,
-                flag=self.flag,
-                channel_order=self.channel_order,
-                backend=self.backend)  # HWC
+            if ".mat" in filepath:
+                mat = sio.loadmat(filepath)
+                lastkey = list(mat)[-1]
+                img = mat[lastkey]
+                img = np.stack([img,img,img],axis=2)
+                # img = cv2.imdecode(img,flags=IMREAD_COLOR)
+                # print(lastkey)
+                # print(img_bytes)
+                # breakpoint()
+            else: 
+                img_bytes = self.file_client.get(filepath)
+                img = mmcv.imfrombytes(
+                    img_bytes,
+                    flag=self.flag,
+                    channel_order=self.channel_order,
+                    backend=self.backend)  # HWC
 
         if self.convert_to is not None:
             if self.channel_order == 'bgr' and self.convert_to.lower() == 'y':
@@ -101,7 +116,8 @@ class LoadImageFromFile:
         results[f'{self.key}_ori_shape'] = img.shape
         if self.save_original_img:
             results[f'ori_{self.key}'] = img.copy()
-
+        # print(results, '123456789')
+        # print(img, '234234234234')
         return results
 
     def __repr__(self):
@@ -130,9 +146,6 @@ class LoadImageFromFileList(LoadImageFromFile):
             no conversion is conducted. Default: None.
         save_original_img (bool): If True, maintain a copy of the image in
             `results` dict with name of `f'ori_{key}'`. Default: False.
-        use_cache (bool): If True, load all images at once. Default: False.
-        backend (str): The image loading backend type. Options are `cv2`,
-            `pillow`, and 'turbojpeg'. Default: None.
         kwargs (dict): Args for file client.
     """
 
@@ -161,24 +174,10 @@ class LoadImageFromFileList(LoadImageFromFile):
         if self.save_original_img:
             ori_imgs = []
         for filepath in filepaths:
-            if self.use_cache:
-                if filepath in self.cache:
-                    img = self.cache[filepath]
-                else:
-                    img_bytes = self.file_client.get(filepath)
-                    img = mmcv.imfrombytes(
-                        img_bytes,
-                        flag=self.flag,
-                        channel_order=self.channel_order,
-                        backend=self.backend)  # HWC
-                    self.cache[filepath] = img
-            else:
-                img_bytes = self.file_client.get(filepath)
-                img = mmcv.imfrombytes(
-                    img_bytes,
-                    flag=self.flag,
-                    channel_order=self.channel_order,
-                    backend=self.backend)  # HWC
+            img_bytes = self.file_client.get(filepath)
+            img = mmcv.imfrombytes(
+                img_bytes, flag=self.flag,
+                channel_order=self.channel_order)  # HWC
 
             # convert to y-channel, if specified
             if self.convert_to is not None:
@@ -367,6 +366,7 @@ class LoadMask:
                                           **self.file_client_kwargs)
         # minus 1 to avoid out of range error
         mask_idx = np.random.randint(0, self.mask_set_size)
+
         mask_bytes = self.file_client.get(self.mask_list[mask_idx])
         mask = mmcv.imfrombytes(mask_bytes, flag=self.flag)  # HWC, BGR
         if mask.ndim == 2:

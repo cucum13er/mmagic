@@ -1,18 +1,16 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import numbers
 import os.path as osp
-import warnings
-from copy import deepcopy
 
 import mmcv
-import torch
 from mmcv.runner import auto_fp16
 
-from mmedit.core import InceptionV3, psnr, ssim, tensor2img
+from mmedit.core import psnr, ssim, tensor2img
 from ..base import BaseModel
 from ..builder import build_backbone, build_loss
 from ..registry import MODELS
-
+# from mmedit.models.backbones.sr_backbones.ha_edsr import HAEDSR
+# from mmedit.models.backbones.sr_backbones.dasr import DASR
 
 @MODELS.register_module()
 class BasicRestorer(BaseModel):
@@ -32,7 +30,6 @@ class BasicRestorer(BaseModel):
         pretrained (str): Path for pretrained model. Default: None.
     """
     allowed_metrics = {'PSNR': psnr, 'SSIM': ssim}
-    feature_based_metrics = ['FID', 'KID']
 
     def __init__(self,
                  generator,
@@ -78,9 +75,9 @@ class BasicRestorer(BaseModel):
         if test_mode:
             return self.forward_test(lq, gt, **kwargs)
 
-        return self.forward_train(lq, gt)
+        return self.forward_train(lq, gt, **kwargs)
 
-    def forward_train(self, lq, gt):
+    def forward_train(self, lq, gt, **kwargs):
         """Training forward function.
 
         Args:
@@ -90,7 +87,13 @@ class BasicRestorer(BaseModel):
         Returns:
             Tensor: Output tensor.
         """
+
         losses = dict()
+        # if dasr, add contrastive loss
+        # breakpoint()
+        # if isinstance(self.generator, DASR):
+        #     output, logit = self.generator(lq)
+
         output = self.generator(lq)
         loss_pix = self.pixel_loss(output, gt)
         losses['loss_pix'] = loss_pix
@@ -116,39 +119,9 @@ class BasicRestorer(BaseModel):
         gt = tensor2img(gt)
 
         eval_result = dict()
-        inception_needed_metrics = []
         for metric in self.test_cfg.metrics:
-            if metric in self.feature_based_metrics:
-                inception_needed_metrics.append(metric)
-                # build with default args
-                eval_result[metric] = dict(type=metric)
-            elif (isinstance(metric, dict)
-                  and metric['type'] in self.feature_based_metrics):
-                inception_needed_metrics.append(metric['type'])
-                # build with user defined args
-                eval_result[metric['type']] = deepcopy(metric)
-
-        if inception_needed_metrics:
-            warnings.warn("'_incetion_feat' is newly added to "
-                          '`self.test_cfg.metrics` to compute '
-                          f'{inception_needed_metrics}.')
-            if '_inception_feat' not in self.allowed_metrics:
-                inception_style = self.test_cfg.get('inception_style',
-                                                    'StyleGAN')
-                device = 'cuda' if torch.cuda.is_available() else 'cpu'
-                self.allowed_metrics['_inception_feat'] = InceptionV3(
-                    inception_style, device=device)
-                self.test_cfg.metrics = tuple(
-                    self.test_cfg.metrics) + ('_inception_feat', )
-
-        for metric in self.test_cfg.metrics:
-            if isinstance(metric,
-                          dict) or metric in self.feature_based_metrics:
-                # skip FID and KID
-                continue
-            else:
-                eval_result[metric] = self.allowed_metrics[metric](output, gt,
-                                                                   crop_border)
+            eval_result[metric] = self.allowed_metrics[metric](output, gt,
+                                                               crop_border)
         return eval_result
 
     def forward_test(self,
@@ -220,8 +193,9 @@ class BasicRestorer(BaseModel):
             dict: Returned output.
         """
         outputs = self(**data_batch, test_mode=False)
+        breakpoint()
         loss, log_vars = self.parse_losses(outputs.pop('losses'))
-
+        # breakpoint()
         # optimize
         optimizer['generator'].zero_grad()
         loss.backward()

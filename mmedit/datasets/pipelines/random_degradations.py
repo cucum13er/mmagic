@@ -1,4 +1,3 @@
-# Copyright (c) OpenMMLab. All rights reserved.
 import io
 import logging
 import random
@@ -33,7 +32,7 @@ class RandomBlur:
         self.params = params
 
     def get_kernel(self, num_kernels):
-        kernel_type = np.random.choice(
+        kernel = np.random.choice(
             self.params['kernel_list'], p=self.params['kernel_prob'])
         kernel_size = random.choice(self.params['kernel_size'])
 
@@ -71,7 +70,7 @@ class RandomBlur:
         kernels = []
         for _ in range(0, num_kernels):
             kernel = blur_kernels.random_mixed_kernels(
-                [kernel_type],
+                [kernel],
                 [1],
                 kernel_size,
                 [sigma_x, sigma_x],
@@ -188,12 +187,7 @@ class RandomResize:
                 scale_factor = np.random.uniform(resize_scale[0], 1)
             else:
                 scale_factor = 1
-
-            # determine output size
-            h_out, w_out = h * scale_factor, w * scale_factor
-            if self.params.get('is_size_even', False):
-                h_out, w_out = 2 * (h_out // 2), 2 * (w_out // 2)
-            target_size = (int(h_out), int(w_out))
+            target_size = (int(h * scale_factor), int(w * scale_factor))
         else:
             resize_step = 0
 
@@ -214,12 +208,7 @@ class RandomResize:
                 scale_factor += np.random.uniform(-resize_step, resize_step)
                 scale_factor = np.clip(scale_factor, resize_scale[0],
                                        resize_scale[1])
-
-                # determine output size
-                h_out, w_out = h * scale_factor, w * scale_factor
-                if self.params.get('is_size_even', False):
-                    h_out, w_out = 2 * (h_out // 2), 2 * (w_out // 2)
-                target_size = (int(h_out), int(w_out))
+                target_size = (int(h * scale_factor), int(w * scale_factor))
 
         if is_single_image:
             outputs = outputs[0]

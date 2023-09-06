@@ -19,6 +19,7 @@ class GLEAN(SRGAN):
     Paper:
     GLEAN: Generative Latent Bank for Large-Factor Image Super-Resolution.
     CVPR, 2021.
+
     """
 
     def init_weights(self, pretrained=None):

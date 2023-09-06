@@ -11,8 +11,10 @@ from .real_esrgan import RealESRGAN
 from .srgan import SRGAN
 from .tdan import TDAN
 from .ttsr import TTSR
-
+#################################################################
+from .blindsr import BlindSR
+from .blindsr_moco import BlindSR_MoCo
 __all__ = [
     'BasicRestorer', 'SRGAN', 'ESRGAN', 'EDVR', 'LIIF', 'BasicVSR', 'TTSR',
-    'GLEAN', 'TDAN', 'DIC', 'RealESRGAN', 'RealBasicVSR'
+    'GLEAN', 'TDAN', 'DIC', 'RealESRGAN', 'RealBasicVSR', 'BlindSR', 'BlindSR_MoCo',
 ]

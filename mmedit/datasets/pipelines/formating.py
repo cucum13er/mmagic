@@ -32,8 +32,8 @@ def to_tensor(data):
 
 @PIPELINES.register_module()
 class ToTensor:
-    """Convert some values in results dict to `torch.Tensor` type in data
-    loader pipeline.
+    """Convert some values in results dict to `torch.Tensor` type
+    in data loader pipeline.
 
     Args:
         keys (Sequence[str]): Required keys to be converted.
@@ -238,6 +238,7 @@ class Collect:
     def __init__(self, keys, meta_keys=None):
         self.keys = keys
         self.meta_keys = meta_keys
+        # breakpoint()
 
     def __call__(self, results):
         """Call function.
@@ -251,10 +252,15 @@ class Collect:
         """
         data = {}
         img_meta = {}
+        # breakpoint()
+        # print(results,'1111111')
         for key in self.meta_keys:
             img_meta[key] = results[key]
         data['meta'] = DC(img_meta, cpu_only=True)
+        # print(data)
+        # breakpoint()
         for key in self.keys:
+            # breakpoint()
             data[key] = results[key]
         return data
 

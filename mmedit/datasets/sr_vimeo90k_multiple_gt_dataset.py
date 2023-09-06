@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
 import os.path as osp
 
 from .base_sr_dataset import BaseSRDataset
@@ -56,10 +55,10 @@ class SRVimeo90KMultipleGTDataset(BaseSRDataset):
         self.data_infos = self.load_annotations()
 
     def load_annotations(self):
-        """Load annotations for Vimeo-90K dataset.
+        """Load annoations for Vimeo-90K dataset.
 
         Returns:
-            list[dict]: A list of dicts for paired paths and other information.
+            dict: Returned dict for LQ and GT pairs.
         """
         # get keys
         with open(self.ann_file, 'r') as fin:
@@ -67,7 +66,6 @@ class SRVimeo90KMultipleGTDataset(BaseSRDataset):
 
         data_infos = []
         for key in keys:
-            key = key.replace('/', os.sep)
             lq_paths = [
                 osp.join(self.lq_folder, key, f'im{i}.png')
                 for i in range(1, self.num_input_frames + 1)
