@@ -8,7 +8,7 @@ model = dict(
         #pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'),
         pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'),
     	generator=dict(
-            		type='HASR',  
+            		type='HASR_single',  
                     in_channels=3,
                     out_channels=3,
                     mid_channels=64,
@@ -185,11 +185,11 @@ optimizers = dict(
         )
 
 # learning policy
-total_iters = 200000
+total_iters = 80000
 lr_config = dict(
     policy='Step',
     by_epoch=False,
-    step=[40000, 80000, 120000, 160000],
+    step=[20000, 40000, 60000],
     gamma=0.5)
 
 checkpoint_config = dict(interval=20000, save_optimizer=True, by_epoch=False)

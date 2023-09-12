@@ -29,10 +29,11 @@ from .contrastive_head import ContrastiveHead
 from .snn_head import SNNLossHead
 from .moco_label import MoCo_label
 from .hasr import HASR
+from .hasr_single import HASR_single
 __all__ = [
     'MSRResNet', 'RRDBNet', 'EDSR', 'EDVRNet', 'TOFlow', 'SRCNN', 'DICNet',
     'BasicVSRNet', 'IconVSR', 'RDN', 'TTSRNet', 'GLEANStyleGANv2', 'TDANNet',
     'LIIFEDSR', 'LIIFRDN', 'BasicVSRPlusPlus', 'RealBasicVSRNet', 'ResNet', 
     'RDN_Rui', 'DASR', 'HAEDSR', 'HAEDSR_Cont', 'NonLinearNeck', 'EasyRes', 'MoCo',
-    'MoCoV2Neck', 'ContrastiveHead', 'SNNLossHead', 'MoCo_label', 'HASR',
+    'MoCoV2Neck', 'ContrastiveHead', 'SNNLossHead', 'MoCo_label', 'HASR', 'HASR_single'
 ]
