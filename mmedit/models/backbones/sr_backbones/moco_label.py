@@ -77,6 +77,7 @@ class MoCo_label(BaseModel):
         """Update queue."""
         # gather keys before updating queue
         keys = concat_all_gather(keys)
+        labels = concat_all_gather(labels)
         # breakpoint()
         batch_size = keys.shape[0]
 
