@@ -5,8 +5,8 @@ scale = 4
 model = dict(
     	type='BlindSR_MoCo',
         train_contrastive=False,
-        #pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'),
-        pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'),
+        pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'),
+        # pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'),
     	generator=dict(
             		type='HASR_single',  
                     in_channels=3,
@@ -27,7 +27,8 @@ model = dict(
                     backbone=dict(
                         type='EasyRes',
                         in_channels=3,
-                        pretrained = '/home/rui/Rui_SR/mmselfsup/work_dirs/selfsup/moco/moco_easyres_epoch2000_temp0_07_DIV2K_supcon/weights_2000.pth',
+                        # pretrained = '/home/rui/Rui_SR/mmselfsup/work_dirs/selfsup/moco/moco_easyres_epoch2000_temp0_07_DIV2K_supcon/weights_2000.pth',
+                        pretrained = '/work/pi_xiandu_umass_edu/ruima/pretrain/selfsup/moco/moco_easyres_epoch2000_temp0_07_DIV2K_supcon/weights_2000.pth',
                         ),
                     neck=dict(
                         type='MoCoV2Neck',
@@ -104,8 +105,8 @@ test_pipeline = [
 ]
 
 data = dict(
-    workers_per_gpu=6,
-    train_dataloader=dict(samples_per_gpu=32, drop_last=True),
+    workers_per_gpu=1,
+    train_dataloader=dict(samples_per_gpu=8, drop_last=True),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
@@ -158,18 +159,18 @@ data = dict(
                     # 'data/Set5/X4/lq/sig_0.5',            		 
                     #'data/Set5/X4/lq/sig_1.0',            		 
                     # 'data/Set5/X4/lq/sig_2.0',
-                    #'data/Set14/X4/lq/sig_4.0',
+                    # 'data/Set14/X4/lq/sig_4.0',
                     # 'data/Set5/X4/lq/sig_4.0',
                     # 'data/Set5/X2/lq/sig_4.0',
-                    #'data/Set5/X4/lq/sig_1.0',
-                    'data/BSD100/X4/lq/sig_3.0',
-                    #'data/Urban100/X4/lq/sig_1.0',
+                    # 'data/Set5/X4/lq/sig_4.0',
+                    # 'data/BSD100/X4/lq/sig_4.0',
+                    'data/Urban100/X4/lq/sig_4.0',
                     # 'data/Urban100/X2/lq_aniso/sig_0.2_4.0theta_0.0',
                    ],
-        #gt_folder= 'data/Set5/X4/gt/',
-        #gt_folder= 'data/Set14/X4/gt/',
-        #gt_folder= 'data/Urban100/X4/gt/',   
-        gt_folder= 'data/BSD100/X4/gt/',
+        # gt_folder= 'data/Set5/X4/gt/',
+        # gt_folder= 'data/Set14/X4/gt/',
+        gt_folder= 'data/Urban100/X4/gt/',   
+        # gt_folder= 'data/BSD100/X4/gt/',
         pipeline=test_pipeline,
         scale=scale,
         filename_tmpl='{}'))

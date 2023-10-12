@@ -1,23 +1,29 @@
 exp_name = 'dasr_x4c64b16_g1_100k_div2k'
 
-scale = 4
+scale = 2
+img_size = 64
+
 # model settings
 model = dict(
     	type='BlindSR_MoCo',
         train_contrastive=False,
-        #pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'),
-        pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'),
-    	generator=dict(
-            		type='HASR',  
-                    in_channels=3,
-                    out_channels=3,
-                    mid_channels=64,
-                    num_blocks=5,
-                    num_groups=5,
-                    upscale_factor=scale,
-                    reduction=8,
-                    scale = scale,
-                    frozen_groups = 0,
+        pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'),
+        # pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'),
+        generator=dict(
+                    type='SwinIRNet_HA',
+                    upscale=scale,
+                    in_chans=3,
+                    img_size=img_size,
+                    window_size=8,
+                    img_range=1.0,
+                    depths=[6, 6, 6, 6,],
+                    embed_dim=180,
+                    num_heads=[6, 6, 6, 6],
+                    mlp_ratio=2,
+                    upsampler='nearest+conv',
+                    resi_connection='1conv',
+                    fuse_rstb = False,
+                    fuse_basic = True,
                     ),
         contrastive_part = dict(
                     type='MoCo_label',
@@ -28,7 +34,7 @@ model = dict(
                         type='EasyRes',
                         in_channels=3,
                         # pretrained = '/home/rui/Rui_SR/mmselfsup/work_dirs/selfsup/moco/moco_easyres_epoch2000_temp0_07_DIV2K_supcon/weights_2000.pth',
-                        pretrained = '/work/pi_xiandu_umass_edu/ruima/pretrain/selfsup/moco/moco_easyres_epoch2000_temp0_07_DIV2K_supcon/weights_2000.pth',
+                        pretrained = '/work/pi_xiandu_umass_edu/ruima/pretrain/selfsup/moco/moco_easyres_DRealSR_x2/weights_2000.pth',
                         ),
                     neck=dict(
                         type='MoCoV2Neck',
@@ -45,10 +51,8 @@ train_cfg = None
 test_cfg = dict(metrics=['PSNR', 'SSIM'], crop_border=scale)
 
 # dataset settings
-# dataset settings
-train_dataset_type = 'SRMultiFolderLabeledDataset'
-#train_dataset_type = 'SRMultiFolderDataset'
-# val_dataset_type = 'SRMultiFolderLabeledDataset'
+train_dataset_type = 'SRDRealSR'
+# val_dataset_type = 'SRDRealSR'
 val_dataset_type = 'SRMultiFolderDataset'
 train_pipeline = [
     dict(
@@ -66,10 +70,10 @@ train_pipeline = [
     dict(type='RescaleToZeroOne', keys=['lq', 'gt']),
     #### add another view ########################
     dict(type='CopyValues', src_keys=['lq','gt'], dst_keys=['lq_tmp','gt_tmp']),
-    dict(type='PairedRandomCrop', gt_patch_size=192), # only crop lq and gt
+    dict(type='PairedRandomCrop', gt_patch_size=128), # only crop lq and gt
     dict(type='CopyValues', src_keys=['lq','gt'], dst_keys=['lq_view','gt_view']), # another view
     dict(type='CopyValues', src_keys=['lq_tmp','gt_tmp'], dst_keys=['lq','gt']), # the whole image back
-    dict(type='PairedRandomCrop', gt_patch_size=192), # crop the new lq and gt
+    dict(type='PairedRandomCrop', gt_patch_size=128), # crop the new lq and gt
     # random flip and transpose for both views
     dict(
         type='Flip', keys=['lq', 'gt'], flip_ratio=0.5,
@@ -99,14 +103,15 @@ test_pipeline = [
         flag='color',
         channel_order='rgb'),
     dict(type='RescaleToZeroOne', keys=['lq', 'gt']),
-    dict(type='PairedRandomCrop', gt_patch_size=192), # crop the new lq and gt
+    dict(type='PairedRandomCrop', gt_patch_size=128), # crop the new lq and gt
     dict(type='Collect', keys=['lq', 'gt'], meta_keys=['lq_path', 'gt_path']),
     dict(type='ImageToTensor', keys=['lq', 'gt'])
 ]
 
+
 data = dict(
-    workers_per_gpu=1,
-    train_dataloader=dict(samples_per_gpu=16, drop_last=True),
+    workers_per_gpu=2,
+    train_dataloader=dict(samples_per_gpu=2, drop_last=True),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
@@ -114,18 +119,27 @@ data = dict(
         times=1000,
         dataset=dict(
             type=train_dataset_type,
-            lq_root = 'data/DIV2K_Flickr2K/lq/X4',
-            # lq_folders=['data/MultiDegrade/DIV2K/X4/train/sig_0.5',
-            # 		 'data/MultiDegrade/DIV2K/X4/train/sig_01',
-            # 		 'data/MultiDegrade/DIV2K/X4/train/sig_02',
-            # 		 'data/MultiDegrade/DIV2K/X4/train/sig_03',
-            # 		 'data/MultiDegrade/DIV2K/X4/train/sig_04',
-            		# ],
-            gt_folder='data/DIV2K_Flickr2K/gt',
+            #gt_folder='/media/rui/Samsung4TB/DRealSR/Train_x4/train_LR',
+            gt_folder='data/DRealSRplusImagePairs/Train_x2/train_LR',            
             pipeline=train_pipeline,
             scale=scale,
+            num_views=2,
             filename_tmpl = '{}'
             )),
+    # val=dict(
+    #     type=val_dataset_type,
+    #     gt_folder= 'data/DRealSRplusImagePairs/Test_x2/test_LR',
+    #     pipeline=test_pipeline,
+    #     scale=scale,
+    #     num_views=1,
+    #     filename_tmpl='{}'),
+    # test=dict(
+    #     type=val_dataset_type,
+    #     gt_folder= 'data/DRealSRplusImagePairs/Test_x2/test_LR',        
+    #     pipeline=test_pipeline,
+    #     scale=scale,
+    #     num_views=1,
+    #     filename_tmpl='{}'))
     val=dict(
         type=val_dataset_type,
         lq_folders=[
@@ -139,15 +153,15 @@ data = dict(
                     # 'data/Set5/X4/lq/sig_2.0',
                     # 'data/Set5/X4/lq/sig_3.0',
                     # 'data/Set5/X4/lq/sig_4.0',
-                    'data/Set5/X4/lq/sig_3.0',
+                    'data/Set5/X2/lq/sig_4.0',
                     # 'data/BSD100/X4/lq/sig_1.0',
                     # 'data/Urban100/X2/lq/sig_0.5',
                    ],
-        gt_folder= 'data/Set5/X4/gt/',
+        gt_folder= 'data/Set5/X2/gt/',
         # gt_folder= 'data/Urban100/X2/gt/',    
         pipeline=test_pipeline,
         scale=scale,
-        filename_tmpl='{}'),
+        filename_tmpl='{}'),     
     test=dict(
         type=val_dataset_type,
         lq_folders=[
@@ -157,24 +171,24 @@ data = dict(
                     # 'data/MultiDegrade/DIV2K_aniso/X4/test/sig_03',
                     # 'data/MultiDegrade/DIV2K_aniso/X4/test/sig_04',
                     # 'data/Set5/X4/lq/sig_0.5',            		 
-                    # 'data/Set5/X4/lq/sig_4.0',            		 
+                    # 'data/Set5/X4/lq/sig_1.0',            		 
                     # 'data/Set5/X4/lq/sig_2.0',
-                    # 'data/Set14/X4/lq/sig_3.0',
+                    # 'data/Set5/X4/lq/sig_3.0',
                     # 'data/Set5/X4/lq/sig_4.0',
                     # 'data/Set5/X2/lq/sig_4.0',
-                    #'data/Set5/X4/lq/sig_1.0',
-                    'data/BSD100/X4/lq/sig_4.0',
-                    # 'data/Urban100/X4/lq/sig_4.0',
+                    # 'data/Set14/X4/lq/sig_4.0',
+                    # 'data/BSD100/X2/lq/sig_4.0',
+                    'data/Urban100/X2/lq/sig_4.0',
                     # 'data/Urban100/X2/lq_aniso/sig_0.2_4.0theta_0.0',
                    ],
-        # gt_folder= 'data/Set5/X4/gt/',
+        # gt_folder= 'data/Set5/X2/gt/',
         # gt_folder= 'data/Set14/X4/gt/',
-        # gt_folder= 'data/Urban100/X4/gt/',   
-        gt_folder= 'data/BSD100/X4/gt/',
+        gt_folder= 'data/Urban100/X2/gt/',   
+        # gt_folder= 'data/BSD100/X2/gt/',
         pipeline=test_pipeline,
         scale=scale,
-        filename_tmpl='{}'))
-
+        filename_tmpl='{}')        
+        )
 # optimizer
 optimizers = dict(
                  # type='Adam', lr=1e-2, betas=(0.9, 0.999),
@@ -186,11 +200,11 @@ optimizers = dict(
         )
 
 # learning policy
-total_iters = 80000
+total_iters = 200000
 lr_config = dict(
     policy='Step',
     by_epoch=False,
-    step=[20000, 40000, 60000],
+    step=[40000, 80000, 120000, 160000],
     gamma=0.5)
 
 checkpoint_config = dict(interval=20000, save_optimizer=True, by_epoch=False)

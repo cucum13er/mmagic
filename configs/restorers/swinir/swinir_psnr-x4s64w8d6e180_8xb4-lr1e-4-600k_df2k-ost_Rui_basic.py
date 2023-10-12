@@ -1,23 +1,29 @@
 exp_name = 'dasr_x4c64b16_g1_100k_div2k'
 
 scale = 4
+img_size = 48
+
 # model settings
 model = dict(
     	type='BlindSR_MoCo',
         train_contrastive=False,
-        #pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'),
-        pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'),
-    	generator=dict(
-            		type='HASR',  
-                    in_channels=3,
-                    out_channels=3,
-                    mid_channels=64,
-                    num_blocks=5,
-                    num_groups=5,
-                    upscale_factor=scale,
-                    reduction=8,
-                    scale = scale,
-                    frozen_groups = 0,
+        pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'),
+        # pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'),
+        generator=dict(
+                    type='SwinIRNet_HA',
+                    upscale=scale,
+                    in_chans=3,
+                    img_size=img_size,
+                    window_size=8,
+                    img_range=1.0,
+                    depths=[6, 6, 6, 6,],
+                    embed_dim=180,
+                    num_heads=[6, 6, 6, 6],
+                    mlp_ratio=2,
+                    upsampler='nearest+conv',
+                    resi_connection='1conv',
+                    fuse_rstb = False,
+                    fuse_basic = True,
                     ),
         contrastive_part = dict(
                     type='MoCo_label',
@@ -105,8 +111,8 @@ test_pipeline = [
 ]
 
 data = dict(
-    workers_per_gpu=1,
-    train_dataloader=dict(samples_per_gpu=16, drop_last=True),
+    workers_per_gpu=2,
+    train_dataloader=dict(samples_per_gpu=2, drop_last=True),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
@@ -157,20 +163,20 @@ data = dict(
                     # 'data/MultiDegrade/DIV2K_aniso/X4/test/sig_03',
                     # 'data/MultiDegrade/DIV2K_aniso/X4/test/sig_04',
                     # 'data/Set5/X4/lq/sig_0.5',            		 
-                    # 'data/Set5/X4/lq/sig_4.0',            		 
-                    # 'data/Set5/X4/lq/sig_2.0',
-                    # 'data/Set14/X4/lq/sig_3.0',
+                    #'data/Set5/X4/lq/sig_1.0',            		 
+                    'data/Set5/X4/lq/sig_4.0',
+                    #'data/Set14/X4/lq/sig_1.0',
                     # 'data/Set5/X4/lq/sig_4.0',
                     # 'data/Set5/X2/lq/sig_4.0',
                     #'data/Set5/X4/lq/sig_1.0',
-                    'data/BSD100/X4/lq/sig_4.0',
-                    # 'data/Urban100/X4/lq/sig_4.0',
+                    #'data/BSD100/X4/lq/sig_4.0',
+                    #'data/Urban100/X4/lq/sig_4.0',
                     # 'data/Urban100/X2/lq_aniso/sig_0.2_4.0theta_0.0',
                    ],
-        # gt_folder= 'data/Set5/X4/gt/',
-        # gt_folder= 'data/Set14/X4/gt/',
-        # gt_folder= 'data/Urban100/X4/gt/',   
-        gt_folder= 'data/BSD100/X4/gt/',
+        gt_folder= 'data/Set5/X4/gt/',
+        #gt_folder= 'data/Set14/X4/gt/',
+        #gt_folder= 'data/Urban100/X4/gt/',   
+        #gt_folder= 'data/BSD100/X4/gt/',
         pipeline=test_pipeline,
         scale=scale,
         filename_tmpl='{}'))

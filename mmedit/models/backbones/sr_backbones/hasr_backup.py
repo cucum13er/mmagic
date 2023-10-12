@@ -57,7 +57,7 @@ class DA_conv(nn.Module):
         # self.conv = nn.Conv2d(channels_in, channels_out, 1, padding=1//2, bias=True)
         # self.conv = common.default_conv(channels_in, channels_out, 1)
         self.sa = SA_layer()
-        # self.ca = CA_layer(channels_in, channels_out, reduction)
+        self.ca = CA_layer(channels_in, channels_out, reduction)
         
         # self.relu = nn.LeakyReLU(0.1, True)
 
@@ -81,9 +81,8 @@ class DA_conv(nn.Module):
         # out = self.conv(out.view(b, -1, h, w))
         # # breakpoint()
         # # branch 2
-        # out = self.sa(x) + self.ca(x)
-        out = self.sa(x)
-        # out = self.ca(x)
+        out = self.sa(x) + self.ca(x)
+
         return out
 
 

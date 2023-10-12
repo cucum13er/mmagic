@@ -91,7 +91,6 @@ def train_model(model,
             Default: None
     """
     logger = get_root_logger(log_level=cfg.log_level)
-
     # start training
     if distributed:
         _dist_train(

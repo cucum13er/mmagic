@@ -31,10 +31,13 @@ from .moco_label import MoCo_label
 from .hasr import HASR
 from .hasr_single import HASR_single
 from .swinir.swinir_net import SwinIRNet_HA
+from .swinir_origin.swinir_net import SwinIRNet
+from .restormer_net import Restormer
 __all__ = [
     'MSRResNet', 'RRDBNet', 'EDSR', 'EDVRNet', 'TOFlow', 'SRCNN', 'DICNet',
     'BasicVSRNet', 'IconVSR', 'RDN', 'TTSRNet', 'GLEANStyleGANv2', 'TDANNet',
     'LIIFEDSR', 'LIIFRDN', 'BasicVSRPlusPlus', 'RealBasicVSRNet', 'ResNet', 
     'RDN_Rui', 'DASR', 'HAEDSR', 'HAEDSR_Cont', 'NonLinearNeck', 'EasyRes', 'MoCo',
-    'MoCoV2Neck', 'ContrastiveHead', 'SNNLossHead', 'MoCo_label', 'HASR', 'HASR_single', 'SwinIRNet_HA'
+    'MoCoV2Neck', 'ContrastiveHead', 'SNNLossHead', 'MoCo_label', 'HASR', 'HASR_single', 
+    'SwinIRNet_HA', 'SwinIRNet', 'Restormer',
 ]

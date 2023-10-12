@@ -5,8 +5,8 @@ scale = 4
 model = dict(
     	type='BlindSR_MoCo',
         train_contrastive=False,
-        #pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'),
-        pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'),
+        pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'),
+        # pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'),
     	generator=dict(
             		type='HASR',  
                     in_channels=3,
@@ -27,7 +27,6 @@ model = dict(
                     backbone=dict(
                         type='EasyRes',
                         in_channels=3,
-                        # pretrained = '/home/rui/Rui_SR/mmselfsup/work_dirs/selfsup/moco/moco_easyres_epoch2000_temp0_07_DIV2K_supcon/weights_2000.pth',
                         pretrained = '/work/pi_xiandu_umass_edu/ruima/pretrain/selfsup/moco/moco_easyres_epoch2000_temp0_07_DIV2K_supcon/weights_2000.pth',
                         ),
                     neck=dict(
@@ -105,7 +104,7 @@ test_pipeline = [
 ]
 
 data = dict(
-    workers_per_gpu=1,
+    workers_per_gpu=4,
     train_dataloader=dict(samples_per_gpu=16, drop_last=True),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
@@ -157,19 +156,19 @@ data = dict(
                     # 'data/MultiDegrade/DIV2K_aniso/X4/test/sig_03',
                     # 'data/MultiDegrade/DIV2K_aniso/X4/test/sig_04',
                     # 'data/Set5/X4/lq/sig_0.5',            		 
-                    # 'data/Set5/X4/lq/sig_4.0',            		 
+                    #'data/Set5/X4/lq/sig_1.0',            		 
                     # 'data/Set5/X4/lq/sig_2.0',
-                    # 'data/Set14/X4/lq/sig_3.0',
+                    #'data/Set14/X4/lq/sig_4.0',
                     # 'data/Set5/X4/lq/sig_4.0',
                     # 'data/Set5/X2/lq/sig_4.0',
                     #'data/Set5/X4/lq/sig_1.0',
-                    'data/BSD100/X4/lq/sig_4.0',
-                    # 'data/Urban100/X4/lq/sig_4.0',
+                    'data/BSD100/X4/lq/sig_3.0',
+                    #'data/Urban100/X4/lq/sig_1.0',
                     # 'data/Urban100/X2/lq_aniso/sig_0.2_4.0theta_0.0',
                    ],
-        # gt_folder= 'data/Set5/X4/gt/',
-        # gt_folder= 'data/Set14/X4/gt/',
-        # gt_folder= 'data/Urban100/X4/gt/',   
+        #gt_folder= 'data/Set5/X4/gt/',
+        #gt_folder= 'data/Set14/X4/gt/',
+        #gt_folder= 'data/Urban100/X4/gt/',   
         gt_folder= 'data/BSD100/X4/gt/',
         pipeline=test_pipeline,
         scale=scale,
@@ -204,5 +203,5 @@ dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = f'./work_dirs/{exp_name}'
 load_from = None#'/home/rui/Rui_SR/mmediting/work_dirs/restorers/hasr/X2/hasr_0808_DRealSR/iter_200000.pth'
-resume_from = None# '/home/rui/Rui_SR/mmediting/work_dirs/restorers/hasr/X4/hasr_0808_fromX2pretrain/iter_60000.pth'
+resume_from =  None #'/home/rui/Rui_SR/mmediting/work_dirs/restorers/hasr/X4/hasr_0808_fromX2pretrain/iter_60000.pth'
 workflow = [('train', 1)]
