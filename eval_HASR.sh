@@ -12,6 +12,20 @@ bash ./tools/dist_train.sh configs/restorers/hasr/hasr_div2kflickr2k_contrastive
 # X4
 bash ./tools/dist_test.sh configs/restorers/hasr/hasr_div2kflickr2k_contrastive_MoCo_both_X4.py work_dirs/restorers/hasr/X4/hasr_initial/iter_200000.pth 1
 
+#################################################################################################################################################################################
+# new 2023-10-05
+# change the backbone /work/pi_xiandu_umass_edu/ruima/git/mmediting_Rui_git/mmedit/models/backbones/sr_backbones/hasr.py
+bash ./tools/dist_test.sh configs/restorers/hasr/hasr_div2kflickr2k_contrastive_MoCo_both_X4.py work_dirs/restorers/hasr_ca/X4/multi_gpus/iter_20000.pth 1
+
+bash ./tools/dist_test.sh configs/restorers/hasr/hasr_div2kflickr2k_contrastive_MoCo_both_X4.py work_dirs/restorers/hasr_sa/X4/multi_gpus/iter_20000.pth 1
+
+# outside RCAB method
+bash ./tools/dist_test.sh configs/restorers/hasr_single/hasr_single_div2kflickr2k_contrastive_MoCo_both_X4.py work_dirs/restorers/hasr_single/X4/multi_gpus/iter_20000.pth 1
+
+#################################################################################################################################################################################
+
+
+
 bash ./tools/dist_test.sh configs/restorers/hasr/hasr_div2kflickr2k_contrastive_MoCo_both_X4.py work_dirs/restorers/hasr/X4/hasr_0808/iter_200000.pth 1 --save-path work_dirs/restorers/hasr/X4/hasr_0808/sr_results/Urban100_1.0/
 
 # X2
@@ -81,5 +95,7 @@ bash ./tools/dist_test.sh configs/restorers/hasr/hasr_div2kflickr2k_contrastive_
 
 
 
+
+bash ./tools/slurm_train.sh configs/restorers/hasr/hasr_div2kflickr2k_contrastive_MoCo_both_X4.py 1 --work-dir work_dirs/restorers/hasr/X4/hasr_0808_fromX2pretrain/
 
 
